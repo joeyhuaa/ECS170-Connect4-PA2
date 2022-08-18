@@ -184,6 +184,5 @@ RADIUS = int(SQUARESIZE/2 - 5)
 
 screen = pygame.display.set_mode(size)
 
-
-
+# hello
 
