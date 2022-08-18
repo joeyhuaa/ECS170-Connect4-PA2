@@ -130,8 +130,8 @@ def miniMax(env, maxDepth):
 	possible = env.topPosition >= 0
 	Max = -math.inf
 	for i in possible:
-		child = self.simulateMove(deepcopy(envrionment), i, self.opponent.position)
-		Value = self.Min(child, env, maxDepth - 1)
+		child = monteCarloAI.simulateMove(deepcopy(envrionment), i, connect4.opponent.position)
+		Value = Min(child, env, maxDepth - 1)
 		if Value > Max:
 			Max = Value
 			move[:] = [Move]
@@ -184,5 +184,6 @@ RADIUS = int(SQUARESIZE/2 - 5)
 
 screen = pygame.display.set_mode(size)
 
-# hello
+
+
 
