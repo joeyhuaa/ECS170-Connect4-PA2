@@ -75,10 +75,86 @@ class stupidAI(connect4Player):
 		else:
 			move[:] = [0]
 
-class minimaxAI(connect4Player):
+
+
+def iterativeDeepening(env, move):
+		maxDepth = 6
+		while (True):
+			move[:] = [miniMax(env, maxDepth)]
+			limit += 1
+
+def simulateMove(env, move, player):
+		connect4.board[connect4.topPosition[move]][move] = player
+		connect4.topPosition[move] -= 1
+		env.history[0].append(move)
+
+def Max(state, depth):
+	if connect4.gameOver(state) or depth == 0:
+		return Evaluation(state)
+	possibleMove = env.topPosition >= 0
+	max_v = -(math.inf)
+	for i in possibleMove:
+		child = simulateMove(deepcopy(env), i, self.opponent.position)
+		Maxi = max(max_v, Min(child, depth - 1))
+	return max_v
+
+def Min(state):
+	if env.gameOver(state) or depth == 0:
+		return Evaluation(state)
+	possibleMove = env.topPosition >= 0
+	min_v = math.inf
+	for i in possibleMove:
+		child = simulateMove(deepcopy(env), i, self.opponent.position)
+		Mini = max(min_v, Min(child, depth - 1))
+	return min_v
+
+# def byWeight(self, state):
+
+def Evaluation(state):
+	weight = [
+		[3, 4, 5, 7, 5, 4, 3],
+		[4, 6, 8, 10, 8, 6, 4],
+		[5, 8, 12, 13, 12, 8, 5],
+		[5, 8, 12, 13, 12, 8, 5],
+		[4, 6, 8, 10, 8, 6, 4],
+		[3, 4, 5, 7, 5, 4, 3]
+	]
+	a = self.board
+	a = a * 2 - 3
+	a = (-1) * a
+	e = weight * a
+	Sum = np.sum(e)
+	return Sum
+
+def miniMax(env, maxDepth):
+	possible = env.topPosition >= 0
+	Max = -math.inf
+	for i in possible:
+		child = self.simulateMove(deepcopy(envrionment), i, self.opponent.position)
+		Value = self.Min(child, env, maxDepth - 1)
+		if Value > Max:
+			Max = Value
+			move[:] = [Move]
+
+class minimaxAI(connect4Player):		#############################################################################################################################
+
 
 	def play(self, env, move):
-		pass
+
+		move[:] = [4]
+
+		iterativeDeepening(env, move)
+
+
+	#	pass
+
+
+
+
+
+
+############################################################################################
+
 
 class alphaBetaAI(connect4Player):
 
