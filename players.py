@@ -3,6 +3,8 @@ import time
 import pygame
 import math
 
+as;ldkfj;alksd;faksjdf
+
 class connect4Player(object):
 	def __init__(self, position, seed=0):
 		self.position = position
