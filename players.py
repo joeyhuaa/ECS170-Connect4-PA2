@@ -8,8 +8,8 @@ from copy import deepcopy
 
 class connect4Player(object):
 	def __init__(self, position, seed=0):
-		self.position = position
-		self.opponent = None
+		self.position = position #player
+		self.opponent = None	
 		self.seed = seed
 		random.seed(seed)
 
@@ -50,7 +50,6 @@ class human2(connect4Player):
 					done = True
 
 class randomAI(connect4Player):
-
 	def play(self, env, move):
 		possible = env.topPosition >= 0
 		indices = []
@@ -59,7 +58,6 @@ class randomAI(connect4Player):
 		move[:] = [random.choice(indices)]
 
 class stupidAI(connect4Player):
-
 	def play(self, env, move):
 		possible = env.topPosition >= 0
 		indices = []
@@ -98,54 +96,48 @@ def Evaluation(state, board):
 # def byWeight(self, state):
 
 class minimaxAI(connect4Player):	
-	
 	def play(self, env, move):
-
-
-
-		player = 0
-		if np.sum(env.board) % 3 == 0:
-			player = 1
-		else:
-			player = 2
-		
-		#self.opponent.position
-
-		maxDepth = 3
-		possible = env.topPosition >= 0
-		Max = -math.inf
-		for i in possible:
-			move = self.simulateMove(deepcopy(env), i, player)
-			Value = self.Max(move, maxDepth - 1, env, player)
-			if Value > Max:
-				Max = Value
-				move[:] = [i]
+		max_depth = 3
+		self.Minimax(env, max_depth)
 	
 	def simulateMove(self, env, move, player):
 		env.board[env.topPosition[move]][move] = player
 		env.topPosition[move] -= 1
 		env.history[0].append(move)
-		return
+		#! doesn't return anything...
+
+	def Minimax(self, env, depth):
+		possible = env.topPosition >= 0
+		# print('possible', possible) # [True, True, ...]
+		max_v = -math.inf
+		for move in possible:
+			child = self.simulateMove(deepcopy(env), move, self.opponent.position) # returning None
+			value = self.Min(child, depth - 1, env)
+			if value > max_v:
+				max_v = value
+				# print('move', move) #None
+				move[:] = [move]
+		# return move
 
 	# move is a column number 0-6
-	def Max(self, move, depth, env, player):
-		if depth == 0:  #env.gameOver(move, player) or 
+	def Max(self, move, depth, env):
+		if depth == 0 or env.gameOver(move, self.position):  #env.gameOver(move, player) or 
 			return Evaluation(move, env.board)
-		possibleMove = env.topPosition >= 0
+		possible = env.topPosition >= 0
 		max_v = -(math.inf)
-		for i in possibleMove:
-			child = self.simulateMove(deepcopy(env), i, player)
-			value = max(max_v, self.Min(child, depth - 1, env, 3 - player))
+		for i in possible:
+			child = self.simulateMove(deepcopy(env), i, self.opponent.position)
+			value = max(max_v, self.Min(child, depth - 1, env))
 		return value
 
-	def Min(self, move, depth, env, player):
-		if depth == 0:		# env.gameOver(move, player) or 
+	def Min(self, move, depth, env):
+		if depth == 0 or env.gameOver(move, self.opponent.position):		# env.gameOver(move, player) or 
 			return Evaluation(move, env.board)
-		possibleMove = env.topPosition >= 0
+		possible = env.topPosition >= 0
 		min_v = math.inf
-		for i in possibleMove:
-			child = self.simulateMove(deepcopy(env), i, player)
-			value = max(min_v, self.Max(child, depth - 1, env, 3 - player))
+		for i in possible:
+			child = self.simulateMove(deepcopy(env), i, self.position)
+			value = min(min_v, self.Max(child, depth - 1, env))
 		return value
 
 
