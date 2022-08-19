@@ -2,6 +2,9 @@ import random
 import time
 import pygame
 import math
+import numpy as np
+from connect4 import connect4
+from copy import deepcopy
 
 class connect4Player(object):
 	def __init__(self, position, seed=0):
@@ -75,42 +78,8 @@ class stupidAI(connect4Player):
 		else:
 			move[:] = [0]
 
-
-
-def iterativeDeepening(env, move):
-		maxDepth = 6
-		while (True):
-			move[:] = [miniMax(env, maxDepth)]
-			limit += 1
-
-def simulateMove(env, move, player):
-		connect4.board[connect4.topPosition[move]][move] = player
-		connect4.topPosition[move] -= 1
-		env.history[0].append(move)
-
-def Max(state, depth):
-	if connect4.gameOver(state) or depth == 0:
-		return Evaluation(state)
-	possibleMove = env.topPosition >= 0
-	max_v = -(math.inf)
-	for i in possibleMove:
-		child = simulateMove(deepcopy(env), i, self.opponent.position)
-		Maxi = max(max_v, Min(child, depth - 1))
-	return max_v
-
-def Min(state):
-	if env.gameOver(state) or depth == 0:
-		return Evaluation(state)
-	possibleMove = env.topPosition >= 0
-	min_v = math.inf
-	for i in possibleMove:
-		child = simulateMove(deepcopy(env), i, self.opponent.position)
-		Mini = max(min_v, Min(child, depth - 1))
-	return min_v
-
-# def byWeight(self, state):
-
-def Evaluation(state):
+def Evaluation(state, board):
+	#todo - implement state
 	weight = [
 		[3, 4, 5, 7, 5, 4, 3],
 		[4, 6, 8, 10, 8, 6, 4],
@@ -119,37 +88,72 @@ def Evaluation(state):
 		[4, 6, 8, 10, 8, 6, 4],
 		[3, 4, 5, 7, 5, 4, 3]
 	]
-	a = self.board
+	a = board
 	a = a * 2 - 3
 	a = (-1) * a
 	e = weight * a
 	Sum = np.sum(e)
 	return Sum
 
-def miniMax(env, maxDepth):
-	possible = env.topPosition >= 0
-	Max = -math.inf
-	for i in possible:
-		child = self.simulateMove(deepcopy(envrionment), i, self.opponent.position)
-		Value = self.Min(child, env, maxDepth - 1)
-		if Value > Max:
-			Max = Value
-			move[:] = [Move]
+# def byWeight(self, state):
 
-class minimaxAI(connect4Player):		#############################################################################################################################
-
-
+class minimaxAI(connect4Player):	
+	
 	def play(self, env, move):
 
-		move[:] = [4]
-
-		iterativeDeepening(env, move)
 
 
-	#	pass
+		player = 0
+		if np.sum(env.board) % 3 == 0:
+			player = 1
+		else:
+			player = 2
+		
+		#self.opponent.position
+
+		maxDepth = 3
+		possible = env.topPosition >= 0
+		Max = -math.inf
+		for i in possible:
+			move = self.simulateMove(deepcopy(env), i, player)
+			Value = self.Max(move, maxDepth - 1, env, player)
+			if Value > Max:
+				Max = Value
+				move[:] = [i]
+	
+	def simulateMove(self, env, move, player):
+		env.board[env.topPosition[move]][move] = player
+		env.topPosition[move] -= 1
+		env.history[0].append(move)
+		return
+
+	# move is a column number 0-6
+	def Max(self, move, depth, env, player):
+		if depth == 0:  #env.gameOver(move, player) or 
+			return Evaluation(move, env.board)
+		possibleMove = env.topPosition >= 0
+		max_v = -(math.inf)
+		for i in possibleMove:
+			child = self.simulateMove(deepcopy(env), i, player)
+			value = max(max_v, self.Min(child, depth - 1, env, 3 - player))
+		return value
+
+	def Min(self, move, depth, env, player):
+		if depth == 0:		# env.gameOver(move, player) or 
+			return Evaluation(move, env.board)
+		possibleMove = env.topPosition >= 0
+		min_v = math.inf
+		for i in possibleMove:
+			child = self.simulateMove(deepcopy(env), i, player)
+			value = max(min_v, self.Max(child, depth - 1, env, 3 - player))
+		return value
 
 
-
+	# def iterativeDeepening(self, env, move):
+	# 	maxDepth = 6
+	# 	while (True):
+	# 		move[:] = [self.miniMax(env, maxDepth, move)]
+	# 		limit += 1
 
 
 
@@ -185,4 +189,3 @@ RADIUS = int(SQUARESIZE/2 - 5)
 screen = pygame.display.set_mode(size)
 
 # hello
-
