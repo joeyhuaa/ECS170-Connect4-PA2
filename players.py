@@ -2,6 +2,9 @@ import random
 import time
 import pygame
 import math
+import numpy as np
+from connect4 import connect4
+from copy import deepcopy
 
 class connect4Player(object):
 	def __init__(self, position, seed=0):
@@ -75,42 +78,13 @@ class stupidAI(connect4Player):
 		else:
 			move[:] = [0]
 
-
-
-def iterativeDeepening(env, move):
-		maxDepth = 6
-		while (True):
-			move[:] = [miniMax(env, maxDepth)]
-			limit += 1
-
-def simulateMove(env, move, player):
-		connect4.board[connect4.topPosition[move]][move] = player
-		connect4.topPosition[move] -= 1
-		env.history[0].append(move)
-
-def Max(state, depth):
-	if connect4.gameOver(state) or depth == 0:
-		return Evaluation(state)
-	possibleMove = env.topPosition >= 0
-	max_v = -(math.inf)
-	for i in possibleMove:
-		child = simulateMove(deepcopy(env), i, self.opponent.position)
-		Maxi = max(max_v, Min(child, depth - 1))
-	return max_v
-
-def Min(state):
-	if env.gameOver(state) or depth == 0:
-		return Evaluation(state)
-	possibleMove = env.topPosition >= 0
-	min_v = math.inf
-	for i in possibleMove:
-		child = simulateMove(deepcopy(env), i, self.opponent.position)
-		Mini = max(min_v, Min(child, depth - 1))
-	return min_v
-
-# def byWeight(self, state):
-
-def Evaluation(state):
+def Evaluation(env, player, Idx, Us):
+	#todo - implement state
+	if Us and env.gameOver(Idx, player):
+		return math.inf
+	elif not Us and env.gameOver(Idx, player):
+		return -(math.inf)
+	
 	weight = [
 		[3, 4, 5, 7, 5, 4, 3],
 		[4, 6, 8, 10, 8, 6, 4],
@@ -119,37 +93,171 @@ def Evaluation(state):
 		[4, 6, 8, 10, 8, 6, 4],
 		[3, 4, 5, 7, 5, 4, 3]
 	]
-	a = self.board
-	a = a * 2 - 3
-	a = (-1) * a
+	
+	base = [
+		[3, 3, 3, 3, 3, 3, 3],
+		[3, 3, 3, 3, 3, 3, 3],
+		[3, 3, 3, 3, 3, 3, 3],
+		[3, 3, 3, 3, 3, 3, 3],
+		[3, 3, 3, 3, 3, 3, 3],
+		[3, 3, 3, 3, 3, 3, 3]
+	]
+
+	
+	#print("Eval Board1: ", env.board)
+	#print(move)
+	
+
+	a = env.board
+	b = a
+	#c = 1 / a
+	#print(c)
+	a = a * 2
+	#print("Eval Board1: ", a)
+	a = base - a
+	#print("Eval Board1: ", a)
+	a = a * 2 * b
+	#print("Eval Board1: ", a)
+
 	e = weight * a
+	
+	#print("Players' Weight: ", b)
+	
+
+	#print("Players Weight: ", e)
+	
 	Sum = np.sum(e)
+	#print("Sum here: ", Sum)		####################################
 	return Sum
 
-def miniMax(env, maxDepth):
-	possible = env.topPosition >= 0
-	Max = -math.inf
-	for i in possible:
-		child = monteCarloAI.simulateMove(deepcopy(envrionment), i, connect4.opponent.position)
-		Value = Min(child, env, maxDepth - 1)
-		if Value > Max:
-			Max = Value
-			move[:] = [Move]
 
-class minimaxAI(connect4Player):		#############################################################################################################################
-
-
+class minimaxAI(connect4Player):
+	
+	
 	def play(self, env, move):
 
-		move[:] = [4]
-
-		iterativeDeepening(env, move)
 
 
-	#	pass
+		player = 0
+		if np.sum(env.board) % 3 == 0:
+			player = 1
+		else:
+			player = 2
+		
+		
+		#self.opponent.position
+
+		maxDepth = 3
+		possibleMove = env.topPosition >= 0
+		Max = -math.inf
+		a = -1
+		
+		for p, i in enumerate(possibleMove):
+			#print("Minimax P1: ", p)
+			currEnv = env
+			env = self.simulateMove(deepcopy(env), i, player)
+			#env = a
+			simEnv = env
+			
+			#print("Minimax P2: ", p)
+			max_v = -math.inf
+			
+			Value = self.Min(move, maxDepth - 1, env, player, p, simEnv)
+			#print("There asdjfkljasdlkjfalskdjf;laskdjfl;askjdflasdkjf;lasjdflskjfla;sdj")
+			#print("i: ", i)
+			#print("Minimax P3: ", p)			# p returns 0 - 6
+			#print("Value: ", Value)
+			#print("Max: ", Max)
+			#print("Min: ", Value)
+			env = currEnv
+			if Value > Max:
+				#print("Minimax P4: ", p)
+				Max = Value
+				#print("adsfasdfsa", Max)
+				#print("Padfasdf: ", p)
+				move[:] = [p]
+
+		#print("a: ", a)
+			
+		#move[:] = [i]
+	
+	def simulateMove(self, env, move, player):
+		#print("Simulate Player: ", player)
+		#print("Simulate move: ", move)
+		env.board[env.topPosition[move]][move] = player
+		env.topPosition[move] -= 1
+		#env.history[0].append(move)
+		#print(move)
+		#print("Simulated: ", env.board)
+		return env
 
 
+	# move is a column number 0-6
+	def Max(self, move, depth, env, player, Idx, simEnv):
+	
+		#print("Max here")			######################################################
+		
+		if env.gameOver(Idx, player) or depth == 0:  #env.gameOver(Idx, player) or 
+			#print("Idx: ", Idx)
+			#print("Eval: ", Evaluation(env, player, move))
+			#print(env.board)
+			print("Max Eval")
+			return Evaluation(deepcopy(env), player, Idx, True)				###############################
+		possibleMove = env.topPosition >= 0
+		max_v = -(math.inf)
+		curEnv = env
+		for p, i in enumerate(possibleMove):
+			if i:
+				#print("Max P: ", p)
+				env = self.simulateMove(deepcopy(env), p, player)
+				#env = simEnv
+				#curEnv = simEnv
+				#print("After: ", env.board)
+				Idx = p
+				print("Max 1:   ", max_v)
+				value = max(max_v, self.Min(move, depth - 1, env, 3 - player, Idx, simEnv))
+				#max_v = value
+				if value > max_v:
+					max_v = value
+				print("Max 2:   ", value)
+				#curEnv = simEnv
+				env = curEnv
+		return max_v
 
+	def Min(self, move, depth, env, player, Idx, simEnv):
+	
+		#print("Min here")			######################################################
+	
+		if env.gameOver(Idx, player) or depth == 0:		# env.gameOver(Idx, player) or 
+			print("Min Eval")
+			return Evaluation(deepcopy(env), player, Idx, False)		###############################
+		possibleMove = env.topPosition >= 0
+		min_v = math.inf
+		#print(depth)
+		curEnv = env
+		for p, i in enumerate(possibleMove):
+			if i:
+				print("Min P1: ", p)
+				#print("Min Player: ", player)
+				env = self.simulateMove(deepcopy(env), p, player)
+				#print("Min P2: ", p)
+				#env = simEnv
+				#curEnv = simEnv
+				Idx = p
+				print("Min 1: ", min_v)
+				value = min(min_v, self.Max(move, depth - 1, env, 3 - player, Idx, simEnv))
+				print("Min 2: ", value)
+				min_v = value
+				#curEnv = simEnv
+				env = curEnv
+		return min_v
+
+
+	# def iterativeDeepening(self, env, move):
+	# 	maxDepth = 6
+	# 	while (True):
+	# 		move[:] = [self.miniMax(env, maxDepth, move)]
+	# 		limit += 1
 
 
 
@@ -184,6 +292,10 @@ RADIUS = int(SQUARESIZE/2 - 5)
 
 screen = pygame.display.set_mode(size)
 
+#<<<<<<< HEAD
 
 
 
+#=======
+# hello
+#>>>>>>> 78f9ecef53802dca1387c929823fae15a494481f
