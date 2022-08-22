@@ -68,7 +68,7 @@ class connect4():
 	# plays a turn for each player
 	def playTurn(self):
 		move = self.randMove() #
-		print('PLAYTURN MOVE', move) #! print move
+		# print('PLAYTURN MOVE', move) #! print move
 		if self.turnPlayer.position in self.limit:
 			time_limit(self.turnPlayer.play, (self,move,), self.time_limits[self.turnPlayer.position-1])
 		else:
@@ -122,9 +122,11 @@ class connect4():
 					break
 
 	def gameOver(self, j, player):
-		print('j', j, '\n') #! print move
+		# print('j', j, '\n') #! print move
 		# Find extrema to consider
 		i = self.topPosition[j] + 1
+		# print('i', i)
+		# print('topPosition', self.topPosition)
 		minRowIndex = max(j - 3, 0)
 		maxRowIndex = min(j + 3, self.shape[1]-1)
 		maxColumnIndex = max(i - 3, 0)
@@ -137,7 +139,10 @@ class connect4():
 		# Horizontal solutions
 		count = 0
 		for s in range(minRowIndex, maxRowIndex+1):
-			if self.board[i, s] == player:
+			# print('self.board\n', self.board)
+			# print('i', i)
+			# print('s',s)
+			if self.board[i, s] == player: # i = row, s = col
 				count += 1
 			else:
 				count = 0

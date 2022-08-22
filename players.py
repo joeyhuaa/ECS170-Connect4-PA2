@@ -79,9 +79,12 @@ class stupidAI(connect4Player):
 			move[:] = [0]
 
 def Evaluation(env, player, colNum, Us):
+	#! useless
 	if Us and env.gameOver(colNum, player): # if we win
+		# print('win')
 		return math.inf
 	elif not Us and env.gameOver(colNum, player): # if we lose
+		# print('lose')
 		return -(math.inf)
 	
 	weight = [
@@ -93,6 +96,7 @@ def Evaluation(env, player, colNum, Us):
 		[3, 4, 5, 7, 5, 4, 3]
 	]
 
+	#! useless
 	# num of 1s in col 3 - num of 2s in col 3
 	num_1s = 0
 	num_2s = 0
@@ -102,68 +106,62 @@ def Evaluation(env, player, colNum, Us):
 		elif row[3] == 2:
 			num_2s += 1
 	
-	print('num_1s', num_1s)
-	print('num_2s', num_2s, '\n========')
+	# print('num_1s', num_1s)
+	# print('num_2s', num_2s, '\n========')
 
 	value = num_1s - num_2s
+	print('value',value)
 	return value
+	# return -100
 
 
 class minimaxAI(connect4Player):
 	def play(self, env, move):
 		maxDepth = 10
+		env = deepcopy(env)
+		env.visualize = False
+		max = -math.inf
 		possible = env.topPosition >= 0
-		Max = -math.inf
 		
-		simEnv = deepcopy(env)
 		for colNum, canPlay in enumerate(possible):
 			if canPlay:
-				child = self.simulateMove(simEnv, colNum, self.position)
-				Value = self.Min(child, maxDepth-1, simEnv, colNum)
-				if Value > Max:
-					Max = Value
+				child = self.simulateMove(env, colNum, self.position)
+				value = self.Min(child, maxDepth-1, colNum)
+				print('value',value) #! doesn't get printed
+				if value > max:
+					print('asdfasf')
+					max = value
 					move[:] = [colNum]
 		
 	def simulateMove(self, env, move, player):
-		# print("Simulate Player: ", player)
-		#print("Simulate move: ", move)
 		env.board[env.topPosition[move]][move] = player
 		env.topPosition[move] -= 1
 		env.history[0].append(move)
-		print('history', env.history)
-		# print(move)
-		# print("Simulated: ", env.board)
 		return env
 
-
-	# move is a column number 0-6
-	def Max(self, child, depth, simEnv, colNum):
-
-		#print("Max here")			######################################################
-		
-		if simEnv.gameOver(colNum, self.position) or depth == 0: 
-			return Evaluation(simEnv, self.position, child, True)				###############################
-		possible = simEnv.topPosition >= 0
+	def Max(self, env, depth, colNum):
+		if env.gameOver(colNum, self.position) or depth == 0:
+			# print('gameover Max')
+			return Evaluation(env, self.position, colNum, True)
+		possible = env.topPosition >= 0 
 		max_v = -(math.inf)
 		for colNum, canPlay in enumerate(possible):
 			if canPlay:
-				child = self.simulateMove(simEnv, colNum, self.opponent.position)
-				max_v =  max(max_v, self.Min(child, depth-1, simEnv, colNum))
+				child = self.simulateMove(deepcopy(env), colNum, self.opponent.position)
+				max_v =  max(max_v, self.Min(child, depth-1, colNum))
 		return max_v
 
-	def Min(self, child, depth, simEnv, colNum):
-	
-		#print("Min here")			######################################################
-	
-		if simEnv.gameOver(colNum, self.opponent.position) or depth == 0:		# env.gameOver(colNum, player) or 
-			return Evaluation(simEnv, self.opponent.position, child, False)		###############################
-		possible = simEnv.topPosition >= 0
-		max_v = math.inf
+	def Min(self, env, depth, colNum):
+		if env.gameOver(colNum, self.opponent.position) or depth == 0:	 
+			# print('gameover Min')
+			return Evaluation(env, self.opponent.position, colNum, False)
+		possible = env.topPosition >= 0
+		min_v = math.inf
 		for colNum, canPlay in enumerate(possible):
 			if canPlay:
-				child = self.simulateMove(simEnv, colNum, self.position)
-				max_v =  min(max_v, self.Max(child, depth-1, simEnv, colNum))
-		return max_v
+				child = self.simulateMove(deepcopy(env), colNum, self.position)
+				min_v =  min(min_v, self.Max(child, depth-1, colNum))
+		return min_v
 
 
 	# def iterativeDeepening(self, env, move):
