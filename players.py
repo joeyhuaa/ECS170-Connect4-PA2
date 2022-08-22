@@ -83,7 +83,7 @@ def Evaluation(env, player, Idx, Us, depth, lastEnv):
 	#print(env.board)
 	#print("Here", np.sum(env.board) % 3)
 	#print(env.board)
-	print("Eval Player: ", player)
+	#print("Eval Player: ", player)
 	#if Us and env.gameOver(Idx, player):
 	if Us == player and lastEnv.gameOver(Idx, player):
 		print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", (depth + 1) * 10000)
@@ -102,7 +102,17 @@ def Evaluation(env, player, Idx, Us, depth, lastEnv):
 		[4, 6, 8, 10, 8, 6, 4],
 		[3, 4, 5, 7, 5, 4, 3]
 	]
-
+	
+	#weight = [
+	#	[1, 2, 3, 4, 3, 2, 1],
+	#	[2, 3, 4, 5, 4, 3, 2],
+	#	[3, 4, 5, 6, 5, 4, 3],
+	#	[4, 5, 6, 7, 6, 5, 4],
+	#	[4, 6, 8, 10, 8, 6, 4],
+	#	[5, 8, 12, 13, 12, 8, 5]
+	
+	#]
+	
 	a = env.board
 	#print('eval board\n', a)
 	for i in a:
@@ -136,6 +146,7 @@ class minimaxAI(connect4Player):
 		a = -1
 		
 		player = np.sum(env.board) % 3 + 1
+		print("the first player: ", player)
 		us = player
 		
 		for p, i in enumerate(possibleMove):
@@ -177,8 +188,10 @@ class minimaxAI(connect4Player):
 		#if child.gameOver(p, player):
 		#	return depth * 10000
 		lastEnv = child
-		self.simulateMove(child, p, self.opponent.position)
-		Value = self.Max(move, depth - 1, child, p, 1, us, lastEnv)
+		print(" MAX Game self.opponent.position: ", self.opponent.position, player)
+		#self.simulateMove(child, p, self.opponent.position)
+		self.simulateMove(child, p, 3 - player)
+		Value = self.Max(move, depth - 1, child, p, player, us, lastEnv)
 		return Value
 	
 	def playAMinGame(self, child, p, player, move, depth, us):
@@ -186,8 +199,10 @@ class minimaxAI(connect4Player):
 		#if child.gameOver(p, 3 - player):
 		#	return -depth * 10000
 		lastEnv = child
-		self.simulateMove(child, p, self.position)
-		Value = self.Min(move, depth - 1, child, p, 2, us, lastEnv)
+		print(" MIN Game self.position: ", self.position, player)
+		#self.simulateMove(child, p, self.position)
+		self.simulateMove(child, p, 3 - player)
+		Value = self.Min(move, depth - 1, child, p, player, us, lastEnv)
 		return Value
 	
 	def simulateMove(self, child, move, player):
@@ -215,7 +230,7 @@ class minimaxAI(connect4Player):
 			#print("Eval: ", Evaluation(env, player, move))
 			#print(env.board)
 			#print("Max Eval")
-			return Evaluation(deepcopy(env), 3 -  player, Idx, True, depth, deepcopy(lastEnv))				###############################
+			return Evaluation(deepcopy(env), 3 -  player, Idx, us, depth, deepcopy(lastEnv))				###############################
 		possibleMove = env.topPosition >= 0
 		maxVal = -(math.inf)
 		
@@ -244,7 +259,7 @@ class minimaxAI(connect4Player):
 			return depth * 100000
 		elif depth == 0:
 			#print("Min Eval")
-			return Evaluation(deepcopy(env), 3- player, Idx, False, depth, deepcopy(lastEnv))		###############################
+			return Evaluation(deepcopy(env), 3- player, Idx, us, depth, deepcopy(lastEnv))		###############################
 		possibleMove = env.topPosition >= 0
 		minVal = math.inf
 		#print(depth)
