@@ -94,7 +94,7 @@ def Evaluation(env, player, Idx, Us, depth, lastEnv):
 		print("------------------------------------------------------------", -(depth + 1) * 10000)
 		return -(depth + 1) * 10000
 	#print(depth)
-	weight = [
+	weightA = [
 		[3, 4, 5, 7, 5, 4, 3],
 		[4, 6, 8, 10, 8, 6, 4],
 		[5, 8, 12, 13, 12, 8, 5],
@@ -103,15 +103,15 @@ def Evaluation(env, player, Idx, Us, depth, lastEnv):
 		[3, 4, 5, 7, 5, 4, 3]
 	]
 	
-	#weight = [
-	#	[1, 2, 3, 4, 3, 2, 1],
-	#	[2, 3, 4, 5, 4, 3, 2],
-	#	[3, 4, 5, 6, 5, 4, 3],
-	#	[4, 5, 6, 7, 6, 5, 4],
-	#	[4, 6, 8, 10, 8, 6, 4],
-	#	[5, 8, 12, 13, 12, 8, 5]
+	weightB = [
+		[1, 2, 3, 4, 3, 2, 1],
+		[2, 3, 4, 5, 4, 3, 2],
+		[3, 4, 5, 6, 5, 4, 3],
+		[4, 5, 6, 7, 6, 5, 4],
+		[4, 6, 8, 10, 8, 6, 4],
+		[5, 8, 12, 13, 12, 8, 5]
 	
-	#]
+	]
 	
 	a = env.board
 	#print('eval board\n', a)
@@ -124,7 +124,7 @@ def Evaluation(env, player, Idx, Us, depth, lastEnv):
 	a = a * 2
 	a = a * 2 * b
 
-	e = weight * a
+	e = weightA * a
 	
 	Sum = np.sum(e)
 	#print("Sum here: ", Sum)		####################################
@@ -145,6 +145,8 @@ class minimaxAI(connect4Player):
 		value = 0
 		a = -1
 		
+		abPNum = -math.inf
+		
 		player = np.sum(env.board) % 3 + 1
 		print("the first player: ", player)
 		us = player
@@ -153,7 +155,7 @@ class minimaxAI(connect4Player):
 			if i:
 			#print("Minimax P1: ", p)
 			
-				Value = self.playAMinGame(deepcopy(env), p, 3 - player, move, maxDepth, us)
+				Value = self.playAMinGame(deepcopy(env), p, 3 - player, move, maxDepth, us, abPNum)
 			
 			#self.simulateMove(deepcopy(env), p, self.position)
 			#env = a
@@ -172,18 +174,21 @@ class minimaxAI(connect4Player):
 				if Value > Max:
 				#print("Minimax P4: ", p)
 					Max = Value
+					
+					abPNum = Max
+					
 					#print("Value After: ", Max)
 				#print("adsfasdfsa", Max)
 				#print("Padfasdf: ", p)
 					#move[:] = [p]
-					a = p
+					move[:] = [p]
 
 		#print("a: ", a)
-		print("Value Final: ", Max)
-		move[:] = [a]
+		#print("Value Final: ", Max)
+		#move[:] = [a]
 
 	
-	def playAMaxGame(self, child, p, player, move, depth, us):
+	def playAMaxGame(self, child, p, player, move, depth, us, abPNum):
 		#player = np.sum(child.board) % 3 + 1
 		#if child.gameOver(p, player):
 		#	return depth * 10000
@@ -191,10 +196,10 @@ class minimaxAI(connect4Player):
 		print(" MAX Game self.opponent.position: ", self.opponent.position, player)
 		#self.simulateMove(child, p, self.opponent.position)
 		self.simulateMove(child, p, 3 - player)
-		Value = self.Max(move, depth - 1, child, p, player, us, lastEnv)
+		Value = self.Max(move, depth - 1, child, p, player, us, lastEnv, abPNum)
 		return Value
 	
-	def playAMinGame(self, child, p, player, move, depth, us):
+	def playAMinGame(self, child, p, player, move, depth, us, abPNum):
 		#player = np.sum(child.board) % 3 + 1
 		#if child.gameOver(p, 3 - player):
 		#	return -depth * 10000
@@ -202,7 +207,7 @@ class minimaxAI(connect4Player):
 		print(" MIN Game self.position: ", self.position, player)
 		#self.simulateMove(child, p, self.position)
 		self.simulateMove(child, p, 3 - player)
-		Value = self.Min(move, depth - 1, child, p, player, us, lastEnv)
+		Value = self.Min(move, depth - 1, child, p, player, us, lastEnv, abPNum)
 		return Value
 	
 	def simulateMove(self, child, move, player):
@@ -217,14 +222,16 @@ class minimaxAI(connect4Player):
 
 
 	# move is a column number 0-6
-	def Max(self, move, depth, env, Idx, player, us, lastEnv):
-	
+	def Max(self, move, depth, env, Idx, player, us, lastEnv, abPNum):
+		
+		
 		#print("Max here")			######################################################
 		print("Max Player: ", player)
 		if lastEnv.gameOver(Idx, 3 - player):  #env.gameOver(Idx, player) or
 			print("-----------------------------")
 			return -depth * 100000
 		elif depth == 0:
+		
 		
 			#print("Idx: ", Idx)
 			#print("Eval: ", Evaluation(env, player, move))
@@ -234,8 +241,8 @@ class minimaxAI(connect4Player):
 		possibleMove = env.topPosition >= 0
 		maxVal = -(math.inf)
 		
-		
-		
+		MaxabPNum = -math.inf
+
 		for p, i in enumerate(possibleMove):
 			if i:
 				#print("Max P: ", p)
@@ -243,14 +250,18 @@ class minimaxAI(connect4Player):
 				#print("After: ", env.board)
 				
 				#print("Max 1:   ", max_v)
-				value = max(maxVal, self.playAMinGame(deepcopy(env), p, 3 - player, move, deepcopy(depth), us))
+				value = max(maxVal, self.playAMinGame(deepcopy(env), p, 3 - player, move, deepcopy(depth), us, MaxabPNum))
 				#max_v = value
 				maxVal = value
 				#print("Max 2:   ", value)
 				# env = curEnv
+				if maxVal > abPNum:
+					return maxVal
+				MaxabPNum = maxVal
+				
 		return maxVal
 
-	def Min(self, move, depth, env, Idx, player, us, lastEnv):
+	def Min(self, move, depth, env, Idx, player, us, lastEnv, abPNum):
 	
 		#print("Min here")			######################################################
 		#print("Min Player: ", player)
@@ -262,7 +273,11 @@ class minimaxAI(connect4Player):
 			return Evaluation(deepcopy(env), 3- player, Idx, us, depth, deepcopy(lastEnv))		###############################
 		possibleMove = env.topPosition >= 0
 		minVal = math.inf
+		
+		MinabPNum = math.inf
+		
 		#print(depth)
+		# MinabPNum = math.inf 									#################################
 		for p, i in enumerate(possibleMove):
 			if i:
 				#print("Min P1: ", p)
@@ -271,10 +286,14 @@ class minimaxAI(connect4Player):
 				#print("Min P2: ", p)
 				
 				#print("Min 1: ", min_v)
-				value = min(minVal, self.playAMaxGame(deepcopy(env), p, 3 - player, move, deepcopy(depth), us))
+				value = min(minVal, self.playAMaxGame(deepcopy(env), p, 3 - player, move, deepcopy(depth), us, MinabPNum))
 				#print("Min 2: ", value)
 				minVal = value
 				# env = curEnv
+				
+				if minVal < abPNum:
+					return minVal
+				MinabPNum = minVal
 		return minVal
 
 
