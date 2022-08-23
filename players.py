@@ -148,12 +148,15 @@ class minimaxAI(connect4Player):
 		player = np.sum(env.board) % 3 + 1
 		print("the first player: ", player)
 		us = player
+
+		simEnv = deepcopy(env)
+		simEnv.visualize = False
 		
 		for p, i in enumerate(possibleMove):
 			if i:
 			#print("Minimax P1: ", p)
 			
-				Value = self.playAMinGame(deepcopy(env), p, 3 - player, move, maxDepth, us)
+				Value = self.playAMinGame(simEnv, p, 3 - player, move, maxDepth, us)
 			
 			#self.simulateMove(deepcopy(env), p, self.position)
 			#env = a
