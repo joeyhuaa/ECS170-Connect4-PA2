@@ -102,7 +102,7 @@ def Evaluation(env, player, Idx, Us, depth, lastEnv):
 		[4, 6, 8, 10, 8, 6, 4],
 		[3, 4, 5, 7, 5, 4, 3]
 	]
-	
+	b = 2
 	#weight = [
 	#	[1, 2, 3, 4, 3, 2, 1],
 	#	[2, 3, 4, 5, 4, 3, 2],
