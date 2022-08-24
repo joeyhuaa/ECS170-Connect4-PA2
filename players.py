@@ -89,7 +89,14 @@ class stupidAI(connect4Player):
 class minimaxAI(connect4Player):
 
 	def play(self, env, move):
-		maxDepth = 3
+		maxDepth = 2
+
+		# if 0 in env.topPosition or 1 in env.topPosition:
+		# 	maxDepth = 3
+		
+		# if list(env.topPosition).count(0) == 3:
+		# 	maxDepth = 4
+		# print('depth',maxDepth)
 		
 		possibleMove = env.topPosition >= 0
 		Max = -math.inf
