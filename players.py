@@ -89,10 +89,23 @@ class stupidAI(connect4Player):
 class minimaxAI(connect4Player):
 
 	def play(self, env, move):
-		maxDepth = 2
+		maxDepth =  2
 
-		# if 0 in env.topPosition or 1 in env.topPosition:
-		# 	maxDepth = 3
+		#if 0 in env.topPosition or 1 in env.topPosition:
+		#	maxDepth = 3
+		count = 0
+		#for g in env.topPosition:
+		#	if g == 0:
+		#		count += 1
+		#	if g == 1:
+		#		count += 0.5
+		
+		#if count >= 4:
+		#	maxDepth = 4
+		#elif count >= 2:
+		#	maxDepth = 3
+		
+			
 		
 		# if list(env.topPosition).count(0) == 3:
 		# 	maxDepth = 4
@@ -111,6 +124,10 @@ class minimaxAI(connect4Player):
 
 		for p, i in enumerate(possibleMove):
 			if i:
+				if i == 2 or i == 3 or i == 4 or i == 5 or i == 6:
+					maxDepth = 3
+				else:
+					maxDepth = 2
 				Value = self.playAMinGame(deepcopy(env), p, 3-player, move, maxDepth, us, alpha, beta)
 				if Value > Max:
 					Max = Value
@@ -212,6 +229,9 @@ class minimaxAI(connect4Player):
 		# 	[4, 6, 8, 10, 8, 6, 4],
 		# 	[3, 4, 5, 7, 5, 4, 3]
 		# ]
+		
+
+			
 		
 		e = self.weight * env.board
 		# e = weight * env.board
