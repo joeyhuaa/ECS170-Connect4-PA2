@@ -33,7 +33,7 @@ for i, v in enumerate(time_limit):
 	time_limit[i] = float(v)
 
 
-agents = {'human': human2, 'humanTxt': human, 'stupidAI': stupidAI, 'randomAI': randomAI, 'monteCarloAI': monteCarloAI, 'minimaxAI': alphaBetaAI, 'alphaBetaAI': alphaBetaAI}
+agents = {'human': human2, 'humanTxt': human, 'stupidAI': stupidAI, 'randomAI': randomAI, 'monteCarloAI': monteCarloAI, 'alphaBetaAI': alphaBetaAI}
 
 if __name__ == '__main__':
 	player1 = agents[args.p1](1, seed)
