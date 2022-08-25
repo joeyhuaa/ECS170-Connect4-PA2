@@ -86,35 +86,13 @@ class stupidAI(connect4Player):
 		else:
 			move[:] = [0]
 
-class minimaxAI(connect4Player):
+class alphaBetaAI(connect4Player):
 
 	def play(self, env, move):
 		maxDepth =  2
-
-		#if 0 in env.topPosition or 1 in env.topPosition:
-		#	maxDepth = 3
-		count = 0
-		#for g in env.topPosition:
-		#	if g == 0:
-		#		count += 1
-		#	if g == 1:
-		#		count += 0.5
-		
-		#if count >= 4:
-		#	maxDepth = 4
-		#elif count >= 2:
-		#	maxDepth = 3
-		
-			
-		
-		# if list(env.topPosition).count(0) == 3:
-		# 	maxDepth = 4
-		# print('depth',maxDepth)
 		
 		possibleMove = env.topPosition >= 0
 		Max = -math.inf
-		
-		abPNum = -math.inf
 		
 		player = np.sum(env.board) % 3 + 1
 		us = player
@@ -159,8 +137,6 @@ class minimaxAI(connect4Player):
 			return self.Evaluation(deepcopy(env), 3 - player, Idx, us, depth, deepcopy(lastEnv))				###############################
 		possibleMove = env.topPosition >= 0
 
-		# maxVal = -math.inf
-		# MaxabPNum = -math.inf
 		value = -math.inf
 
 		for p, i in enumerate(possibleMove):
@@ -169,10 +145,7 @@ class minimaxAI(connect4Player):
 				alpha = max(value, alpha)
 
 				if value >= beta:
-					# return value
 					break
-				# MaxabPNum = maxVal
-				
 		return value
 
 	def Min(self, move, depth, env, Idx, player, us, lastEnv, alpha, beta):
@@ -182,8 +155,6 @@ class minimaxAI(connect4Player):
 			return self.Evaluation(deepcopy(env), 3 - player, Idx, us, depth, deepcopy(lastEnv))		###############################
 		possibleMove = env.topPosition >= 0
 
-		# minVal = math.inf
-		# MinabPNum = math.inf
 		value = math.inf
 		
 		for p, i in enumerate(possibleMove):
@@ -192,10 +163,7 @@ class minimaxAI(connect4Player):
 				beta = min(value, beta)
 				
 				if value <= alpha:
-					# return value
 					break
-				# MinabPNum = minVal
-
 		return value
 
 	def Evaluation(self, env, player, Idx, Us, depth, lastEnv):
@@ -203,57 +171,13 @@ class minimaxAI(connect4Player):
 			return (depth + 1) * 10000
 		elif Us != player and lastEnv.gameOver(Idx, player):
 			return -(depth + 1) * 10000
-		# weightA = [
-		# 	[3, 4, 5, 7, 5, 4, 3],
-		# 	[4, 6, 8, 10, 8, 6, 4],
-		# 	[5, 8, 12, 13, 12, 8, 5],
-		# 	[5, 8, 12, 13, 12, 8, 5],
-		# 	[4, 6, 8, 10, 8, 6, 4],
-		# 	[3, 4, 5, 7, 5, 4, 3]
-		# ]
-		
-		# weightC = [
-		# 	[1, 2, 3, 4, 3, 2, 1],
-		# 	[2, 3, 4, 5, 4, 3, 2],
-		# 	[3, 4, 5, 6, 5, 4, 3],
-		# 	[4, 5, 6, 7, 6, 5, 4],
-		# 	[4, 6, 8, 10, 8, 6, 4],
-		# 	[5, 8, 12, 13, 12, 8, 5]
-		# ]
-
-		# weight = [
-		# 	[3, 4, 5, 5, 5, 4, 3],
-		# 	[4, 6, 8, 8, 8, 6, 4],
-		# 	[5, 8, 12, 13, 12, 8, 5],
-		# 	[5, 8, 12, 13, 12, 8, 5],
-		# 	[4, 6, 8, 10, 8, 6, 4],
-		# 	[3, 4, 5, 7, 5, 4, 3]
-		# ]
-		
-
-			
 		
 		e = self.weight * env.board
-		# e = weight * env.board
 		sum = np.sum(e)
 		return sum
 
 
-	# def iterativeDeepening(self, env, move):
-	# 	maxDepth = 6
-	# 	while (True):
-	# 		move[:] = [self.miniMax(env, maxDepth, move)]
-	# 		limit += 1
-
-
-
 ############################################################################################
-
-
-class alphaBetaAI(connect4Player):
-
-	def play(self, env, move):
-		pass
 
 
 SQUARESIZE = 100
