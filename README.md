@@ -1,1 +1,1 @@
-# ECS170-Connect4-PA2
+# AI Connect4 Project for ECS170
